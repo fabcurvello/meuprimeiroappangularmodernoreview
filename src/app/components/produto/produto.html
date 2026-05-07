@@ -1,4 +1,13 @@
 <div class="produto">
   <h2>{{ nome }}</h2>
-  <p>Preço: R$ {{ preco }}</p>
+  @if (mostrarPreco) {
+    <p>Preço: R$ {{ preco }}</p>
+  }
+
+  @for (item of produtos; track item) {
+    <div>
+      <h3>{{ item.nome | uppercase }}</h3>
+      <p>Preco: {{ item.preco | precoFormatado }}</p>
+    </div>
+  }
 </div>

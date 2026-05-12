@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, effect } from '@angular/core';
 import { Produto } from '../produto/produto';
 
 @Component({
@@ -8,10 +8,26 @@ import { Produto } from '../produto/produto';
   styleUrl: './lista-produtos.css',
 })
 export class ListaProdutos {
+  constructor() {
+    effect(() => {
+      console.log('Lista de produtos alterada:', this.produtos());
+    });
+    effect(() => {
+      console.log('Valor total atualizado:', this.valorTotal());
+    });
+    effect(() => {
+      if (typeof document !== 'undefined') {
+        document.title = `(${this.totalProdutos()}) Minha Loja`;
+      }
+    });
+  }
+
   produtos = signal([
     { nome: 'Notebook', preco: 3800 },
     { nome: 'Mouse', preco: 179 },
   ]);
+
+  produtoSelecionado = signal<string | null>(null);
 
   totalProdutos = computed(() => this.produtos().length);
 
@@ -20,8 +36,7 @@ export class ListaProdutos {
   });
 
   exibirProduto(nome: string) {
-    console.log('Produto selecionado:', nome);
-    // Aqui você pode atualizar o estado, abrir modal, etc.
+    this.produtoSelecionado.set(nome);
   }
 
   adicionarProduto() {

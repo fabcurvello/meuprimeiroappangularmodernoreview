@@ -22,6 +22,8 @@ export class ListaProdutos {
     });
   }
 
+  // SIGNALS
+
   produtos = signal([
     { nome: 'Notebook', preco: 3800 },
     { nome: 'Mouse', preco: 179 },
@@ -29,10 +31,20 @@ export class ListaProdutos {
 
   produtoSelecionado = signal<string | null>(null);
 
+  carrinho = signal<{ nome: string; preco: number }[]>([]);
+
+  // COMPUTED
+
   totalProdutos = computed(() => this.produtos().length);
 
   valorTotal = computed(() => {
     return this.produtos().reduce((total, item) => total + item.preco, 0);
+  });
+
+  quantidadeCarrinho = computed(() => this.carrinho().length);
+
+  totalCarrinho = computed(() => {
+    return this.carrinho().reduce((total, item) => total + item.preco, 0);
   });
 
   exibirProduto(nome: string) {
@@ -45,5 +57,9 @@ export class ListaProdutos {
 
   substituirProdutos() {
     this.produtos.set([{ nome: 'Produto novo', preco: 999 }]);
+  }
+
+  adicionarAoCarrinho(produto: { nome: string; preco: number }) {
+    this.carrinho.update((listaAtual) => [...listaAtual, produto]);
   }
 }

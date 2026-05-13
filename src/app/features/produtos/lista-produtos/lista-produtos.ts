@@ -1,4 +1,5 @@
 import { Component, signal, computed, effect } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Produto } from '../produto/produto';
 
 @Component({
@@ -8,7 +9,11 @@ import { Produto } from '../produto/produto';
   styleUrl: './lista-produtos.css',
 })
 export class ListaProdutos {
-  constructor() {
+  constructor(private http: HttpClient) {
+    // carrega da API
+    this.carregarProdutos();
+
+    // effects continuam iguais
     effect(() => {
       console.log('Lista de produtos alterada:', this.produtos());
     });
@@ -24,10 +29,9 @@ export class ListaProdutos {
 
   // SIGNALS
 
-  produtos = signal([
-    { nome: 'Notebook', preco: 3800 },
-    { nome: 'Mouse', preco: 179 },
-  ]);
+  carregando = signal(true);
+
+  produtos = signal<{ nome: string; preco: number }[]>([]);
 
   produtoSelecionado = signal<string | null>(null);
 
@@ -61,5 +65,30 @@ export class ListaProdutos {
 
   adicionarAoCarrinho(produto: { nome: string; preco: number }) {
     this.carrinho.update((listaAtual) => [...listaAtual, produto]);
+  }
+
+  carregarProdutos() {
+    // inicia loading
+    this.carregando.set(true);
+
+    this.http
+      .get<{ title: string; price: number }[]>('https://fakestoreapi.com/products')
+      .subscribe({
+        next: (dados) => {
+          // Adaptação da API para o nosso projeto
+          const produtosFormatados = dados.map((p) => ({
+            nome: p.title,
+            preco: p.price,
+          }));
+
+          this.produtos.set(produtosFormatados);
+          this.carregando.set(false); // finaliza loading
+        },
+
+        error: (erro) => {
+          console.error('Erro ao carregar produtos:', erro);
+          this.carregando.set(false); // evita loading infinito
+        },
+      });
   }
 }

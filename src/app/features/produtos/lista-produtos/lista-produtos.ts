@@ -31,6 +31,8 @@ export class ListaProdutos {
 
   // SIGNALS
 
+  erro = signal<string | null>(null);
+
   carregando = signal(true);
 
   produtos = signal<{ nome: string; preco: number }[]>([]);
@@ -70,8 +72,8 @@ export class ListaProdutos {
   }
 
   carregarProdutos() {
-    this.carregando.set(true);
-
+    this.erro.set(null); // limpa erro anterior
+    this.carregando.set(true); // ativa loading
     this.produtosService.buscarProdutos().subscribe({
       next: (dados) => {
         const produtos = this.produtosService.transformarProdutos(dados);
@@ -80,6 +82,7 @@ export class ListaProdutos {
       },
       error: (erro) => {
         console.error('Erro ao carregar produtos:', erro);
+        this.erro.set('Erro ao carregar produtos. Verifique sua conexão e tente novamente.');
         this.carregando.set(false);
       },
     });

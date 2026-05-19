@@ -9,6 +9,7 @@ import { Produto } from '../produto/produto';
   styleUrl: './lista-produtos.css',
 })
 export class ListaProdutos {
+  
   constructor() {
     // carrega da API
     this.carregarProdutos();

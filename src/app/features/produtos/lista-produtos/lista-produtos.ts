@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 import { ProdutosService } from '../../../core/services/produtos.service';
 import { CarrinhoFacade } from '../../../core/facades/carrinho.facade';
+import { ItemCarrinho } from '../../../core/models/item-carrinho';
 import { Produto } from '../produto/produto';
 
 @Component({
@@ -64,7 +65,7 @@ export class ListaProdutos {
     this.produtos.set([{ nome: 'Produto novo', preco: 999 }]);
   }
 
-  adicionarAoCarrinho(produto: { nome: string; preco: number }) {
+  adicionarAoCarrinho(produto: ItemCarrinho) {
     this.carrinhoFacade.adicionarProduto(produto);
   }
 
